@@ -14,8 +14,6 @@ COPY src src
 RUN npm ci
 RUN npm run build
 
-COPY public ./public
-
 # ---------------
 
 FROM node:lts-alpine
@@ -30,7 +28,6 @@ COPY --from=build /fetcher/package-lock.json .
 COPY --from=build /fetcher/next.config.mjs .
 COPY --from=build /fetcher/.env .
 COPY --from=build /fetcher/.next ./.next
-COPY --from=build /fetcher/public ./public
 
 RUN npm ci
 

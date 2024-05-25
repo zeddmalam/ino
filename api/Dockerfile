@@ -11,7 +11,6 @@ COPY tsconfig.json .
 COPY .env .
 COPY src src
 COPY prisma prisma
-COPY public public
 
 RUN npm ci
 RUN npm run build
@@ -30,7 +29,6 @@ COPY --from=build /api/package-lock.json .
 COPY --from=build /api/next.config.mjs .
 COPY --from=build /api/.env .
 COPY --from=build /api/.next ./.next
-COPY --from=build /api/public ./public
 COPY --from=build /api/prisma ./prisma
 
 RUN npm ci
