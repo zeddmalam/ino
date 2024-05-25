@@ -1,0 +1,47 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Patient {
+  id                Int                 @id @default(autoincrement())
+  externalId        String              @unique
+  birthday          DateTime
+  gender            Int
+  ethnicity         Int
+  testings          Testing[]           
+
+  @@index(fields: [externalId], name: "externalId_index")
+}
+
+model Testing {
+  id                Int                 @id @default(autoincrement())
+  patientId         Int
+  createdAt         DateTime
+  patient           Patient             @relation(fields: [patientId], references:[id])
+  testingItems      TestingItem[]
+
+  @@index(fields: [patientId], name: "patientId_index")
+  @@index(fields: [createdAt(sort: Desc)], name: "createdAt_index")
+}
+
+model TestingItem {
+  id                Int                 @id @default(autoincrement())
+  name              String
+  value             Int
+  unit              String
+  testingId         Int
+  testing           Testing             @relation(fields: [testingId], references:[id])
+
+  @@index(fields: [testingId], name: "testingId_index")
+}

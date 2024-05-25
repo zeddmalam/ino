@@ -1,0 +1,48 @@
+version: '3.1'
+
+services:
+  pg:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - 5432:5432
+    networks:
+      - ino-net
+  redis:
+    image: redis
+    restart: always
+    ports:
+      - 6379:6379
+    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
+    networks:
+      - ino-net
+  api:
+    build: ./api
+    restart: always
+    ports:
+      - 8082:8082
+    depends_on:
+      - pg
+      - redis
+      - fetcher
+    networks:
+      - ino-net
+  fetcher:
+    build: ./fetcher
+    restart: always
+    ports:
+      - 8081:8081
+    networks:
+      - ino-net
+  web:
+    build: ./web
+    depends_on:
+      - api
+    ports:
+      - 3001:3001
+
+networks:
+  ino-net:
+
